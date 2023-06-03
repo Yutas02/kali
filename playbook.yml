@@ -41,3 +41,21 @@
     - name: Remove dependencies that are no longer required
       apt:
         autoremove: yes
+
+    - name: Copy custom bash aliases
+      ansible.builtin.copy:
+        src: ./.bash_aliases
+        dest: /home/vagrant/.bash_aliases
+        owner: vagrant
+        group: vagrant
+        mode: "0644"
+
+    - name: Source .bashrc
+      shell: "source /home/$USER/.bashrc"
+      args:
+        executable: /bin/bash`
+
+    - name: Pull image for OWASP Juice Shop
+      docker_image:
+        name: "bkimminich/juice-shop"
+        source: "pull"
