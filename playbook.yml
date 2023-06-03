@@ -42,18 +42,26 @@
       apt:
         autoremove: yes
 
-    - name: Copy custom bash aliases
+    - name: Copy custom zsh aliases
       ansible.builtin.copy:
-        src: ./.bash_aliases
-        dest: /home/vagrant/.bash_aliases
+        src: ./.zsh_aliases
+        dest: /home/vagrant/.zsh_aliases
         owner: vagrant
         group: vagrant
         mode: "0644"
 
-    - name: Source .bashrc
-      shell: "source /home/$USER/.bashrc"
-      args:
-        executable: /bin/bash`
+    - name: Add 'source .zsh_aliases' to .zshrc
+      lineinfile:
+        dest: "/home/vagrant/.zshrc"
+        line: |
+          if [ -f ~/zsh_aliases ]; then
+            . ~/zsh_aliases
+          fi
+
+    # - name: Source .zshrc
+    #   shell: "source $HOME/.zshrc"
+    #   args:
+    #     executable: "/bin/zsh"
 
     - name: Pull image for OWASP Juice Shop
       docker_image:
