@@ -1,0 +1,43 @@
+---
+- hosts: all
+  remote_user: vagrant
+  become_user: root
+  become: true
+  vars:
+    cache_valid_time: 86400 # One day in seconds
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: "{{ cache_valid_time }}"
+
+    - name: Update all packages
+      apt:
+        upgrade: safe
+        cache_valid_time: "{{ cache_valid_time }}"
+
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: dist
+        cache_valid_time: "{{ cache_valid_time }}"
+
+    - name: Install additional packages
+      apt:
+        pkg:
+          - tor
+          - torbrowser-launcher
+          - docker.io
+          - git
+        state: latest
+
+    - debug:
+        var: locale_status.stdout_lines
+
+    - name: Remove useless packages from the cache
+      apt:
+        autoclean: yes
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
