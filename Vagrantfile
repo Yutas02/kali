@@ -8,9 +8,9 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "kalilinux/rolling"
-  config.vm.synced_folder ".", "/vagrant"
+  config.vm.synced_folder "./shared", "/home/vagrant/shared"
 
-  # ssh key stuff
+  # Setup SSH keys correctly
   config.ssh.insert_key = false
   config.ssh.private_key_path = ["~/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
   config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
@@ -64,10 +64,6 @@ Vagrant.configure("2") do |config|
       ansible.become = true
       ansible.raw_arguments = [ '-e', 'ansible_python_interpreter=/usr/bin/python' ]
       ansible.config_file = "ansible.cfg"
-      # ansible.become_user = "kali"
-      # ansible.galaxy_role_file = "requirements.yml"
-      # ansible.galaxy_roles_path = "roles"
-      # ansible.extra_vars = { }
-      # ansible.inventory_path = "inventory"
+      ansible.become_user = "vagrant"
   end
 end
