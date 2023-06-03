@@ -5,5 +5,5 @@ alias shared='cd $HOME/shared'
 alias ..='cd ../'
 alias ...='cd ../../'
 
-# shorthand to start OWASP Juice Shop
+# shorthand to start OWASP Juice Shop in detached mode
 alias juice-shop='sudo docker run -d --rm -p 3000:3000 bkimminich/juice-shop'
