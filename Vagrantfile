@@ -31,10 +31,13 @@ Vagrant.configure("2") do |config|
   # VirtualBox-specific configurations
   config.vm.provider "virtualbox" do |vb|
     # Set the box name
-    vb.name = "Kali Linux"
+    vb.name = "kali"
   
     # Display the VirtualBox GUI when booting the machine
     vb.gui = true
+
+    # Set custom monitor count
+    # vb.customize ["modifyvm", :id, "--monitorcount", "2"]
 
     # Customize the amount of memory to 4GB or 8GB on the VM:
     # vb.memory = 4096

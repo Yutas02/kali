@@ -7,6 +7,9 @@
     cache_valid_time: 86400 # One day in seconds
 
   tasks:
+    - debug:
+        var: cache_valid_time
+
     - name: Update apt cache
       apt:
         update_cache: yes
@@ -31,8 +34,11 @@
           - git
         state: latest
 
-    - debug:
-        var: locale_status.stdout_lines
+    - name: Install VSCode
+      shell: |
+        wget -qO- https://go.microsoft.com/fwlink/\?LinkID\=760868 > code_amd64.deb
+        sudo apt install ./code_amd64.deb
+        rm ./code_amd64.deb
 
     - name: Remove useless packages from the cache
       apt:
@@ -50,18 +56,13 @@
         group: vagrant
         mode: "0644"
 
-    - name: Add 'source .zsh_aliases' to .zshrc
+    - name: Add .zsh_aliases to .zshrc
       lineinfile:
         dest: "/home/vagrant/.zshrc"
         line: |
           if [ -f ~/zsh_aliases ]; then
             . ~/zsh_aliases
           fi
-
-    # - name: Source .zshrc
-    #   shell: "source $HOME/.zshrc"
-    #   args:
-    #     executable: "/bin/zsh"
 
     - name: Pull image for OWASP Juice Shop
       docker_image:
