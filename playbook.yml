@@ -34,6 +34,11 @@
           - git
         state: latest
 
+    - name: Add vagrant user to docker group
+      shell: |
+        sudo usermod -aG docker $USER
+        newgrp docker
+
     - name: Install VSCode
       shell: |
         wget -qO- https://go.microsoft.com/fwlink/\?LinkID\=760868 > code_amd64.deb
