@@ -35,13 +35,14 @@ Vagrant.configure("2") do |config|
   
     # Display the VirtualBox GUI when booting the machine
     vb.gui = true
+    # vb.gui = false
 
     # Set custom monitor count
     # vb.customize ["modifyvm", :id, "--monitorcount", "2"]
 
     # Customize the amount of memory to 4GB or 8GB on the VM:
-    # vb.memory = 4096
-    vb.memory = 8192
+    vb.memory = 4096
+    # vb.memory = 8192
     # Customize the number of cpus to 2 on the VM:
     vb.cpus = 2
 

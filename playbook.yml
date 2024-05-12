@@ -68,8 +68,3 @@
           if [ -f ~/zsh_aliases ]; then
             . ~/zsh_aliases
           fi
-
-    - name: Pull image for OWASP Juice Shop
-      docker_image:
-        name: "bkimminich/juice-shop"
-        source: "pull"
