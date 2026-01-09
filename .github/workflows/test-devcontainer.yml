@@ -1,0 +1,44 @@
+name: Test Devcontainer
+
+on:
+  pull_request:
+    paths:
+      - '.devcontainer/**'
+      - '.github/workflows/test-devcontainer.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - '.devcontainer/**'
+      - '.github/workflows/test-devcontainer.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate devcontainer.json
+        run: |
+          python3 -m json.tool .devcontainer/devcontainer.json > /dev/null
+          echo "✅ devcontainer.json is valid JSON"
+
+      - name: Validate setup script
+        run: |
+          bash -n .devcontainer/setup.sh
+          echo "✅ setup.sh has valid syntax"
+
+      - name: Check script is executable
+        run: |
+          if [ -x .devcontainer/setup.sh ]; then
+            echo "✅ setup.sh is executable"
+          else
+            echo "❌ setup.sh is not executable"
+            exit 1
+          fi
+
+      - name: Validate Python scripts
+        run: |
+          python3 -m py_compile ctf-resources/scripts/*.py
+          echo "✅ Python scripts have valid syntax"

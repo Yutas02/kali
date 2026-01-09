@@ -7,3 +7,16 @@ alias ...='cd ../../'
 
 # shorthand to start OWASP Juice Shop in detached mode
 alias juice-shop='sudo docker run -d --rm -p 3000:3000 bkimminich/juice-shop'
+
+# CTF-specific aliases
+alias ll='ls -lah'
+alias ports='netstat -tulanp'
+alias serve='python3 -m http.server'
+alias myip='curl -s ifconfig.me'
+alias decode64='base64 -d'
+alias encode64='base64'
+alias urldecode='python3 -c "import sys, urllib.parse as ul; print(ul.unquote_plus(sys.argv[1]))"'
+alias urlencode='python3 -c "import sys, urllib.parse as ul; print(ul.quote_plus(sys.argv[1]))"'
+
+# Environment info
+alias ctf-env='echo "🚩 CTF Environment Ready! Tools: nmap, burpsuite, metasploit, john, hashcat, gobuster, sqlmap, etc."'
