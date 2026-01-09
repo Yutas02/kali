@@ -1,3 +1,9 @@
 .vagrant/
 .idea/
 shared/
+*.pcap
+*.pcapng
+*.log
+*.tmp
+/tmp/
+.DS_Store
