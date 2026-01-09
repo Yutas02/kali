@@ -55,7 +55,6 @@ apt-get install -y -qq \
     screen \
     python3-pip \
     python3-venv \
-    pipx \
     golang \
     openjdk-17-jdk \
     build-essential \
@@ -78,7 +77,11 @@ apt-get install -y -qq \
 
 # Install Docker-based tools
 echo "🐳 Setting up Docker-based tools..."
-docker pull bkimminich/juice-shop 2>/dev/null || true
+if docker pull bkimminich/juice-shop 2>/dev/null; then
+    echo "✅ OWASP Juice Shop image downloaded successfully"
+else
+    echo "⚠️  Warning: Failed to download OWASP Juice Shop image. You can pull it manually later with: docker pull bkimminich/juice-shop"
+fi
 
 # Install useful Python tools for CTF
 echo "🐍 Installing Python CTF libraries..."
@@ -129,6 +132,11 @@ alias decode64='base64 -d'
 alias encode64='base64'
 alias urldecode='python3 -c "import sys, urllib.parse as ul; print(ul.unquote_plus(sys.argv[1]))"'
 alias urlencode='python3 -c "import sys, urllib.parse as ul; print(ul.quote_plus(sys.argv[1]))"'
+
+# Quick access to CTF resources
+alias ctf-cheat='cat /workspaces/kali/ctf-resources/cheatsheets/CTF_CHEATSHEET.md 2>/dev/null | less || echo "CTF cheatsheet not found"'
+alias revshell='python3 /workspaces/kali/ctf-resources/scripts/reverse_shell.py'
+alias qscan='bash /workspaces/kali/ctf-resources/scripts/quick_scan.sh'
 
 # Quick CTF environment setup
 alias ctf-env='echo "🚩 CTF Environment Ready! Tools: nmap, burpsuite, metasploit, john, hashcat, gobuster, sqlmap, etc."'

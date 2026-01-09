@@ -13,7 +13,7 @@ def check_path(url, path):
         response = requests.get(full_url, timeout=5, allow_redirects=False)
         if response.status_code in [200, 301, 302, 403]:
             return (full_url, response.status_code, len(response.content))
-    except:
+    except (requests.RequestException, Exception):
         pass
     return None
 
