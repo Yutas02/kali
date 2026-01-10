@@ -1,14 +1,74 @@
 #!/bin/bash
-set -e
 
 echo "🔧 Setting up Kali Linux CTF Environment..."
 
+# Critical setup section - MUST complete
+echo "⚙️  Configuring critical environment..."
+
+# Create CTF aliases file FIRST
+cat > /root/.ctf_aliases << 'EOF'
+# CTF-specific aliases
+alias ll='ls -lah'
+alias ports='netstat -tulanp'
+alias serve='python3 -m http.server'
+alias myip='curl -s ifconfig.me'
+alias decode64='base64 -d'
+alias encode64='base64'
+alias urldecode='python3 -c "import sys, urllib.parse as ul; print(ul.unquote_plus(sys.argv[1]))"'
+alias urlencode='python3 -c "import sys, urllib.parse as ul; print(ul.quote_plus(sys.argv[1]))"'
+
+# Quick access to CTF resources
+alias ctf-cheat='cat /workspaces/kali/ctf-resources/cheatsheets/CTF_CHEATSHEET.md 2>/dev/null | less || echo "CTF cheatsheet not found"'
+alias revshell='python3 /workspaces/kali/ctf-resources/scripts/reverse_shell.py'
+alias qscan='bash /workspaces/kali/ctf-resources/scripts/quick_scan.sh'
+
+# Quick CTF environment setup
+alias ctf-env='echo "🚩 CTF Environment Ready! Tools: nmap, burpsuite, metasploit, john, hashcat, gobuster, sqlmap, etc."'
+
+# Go tools in PATH
+export GOPATH=/root/go
+export PATH=$PATH:$GOPATH/bin
+EOF
+
+# Create useful directories
+echo "📁 Creating workspace directories..."
+mkdir -p /root/ctf/{challenges,tools,scripts,wordlists,notes}
+mkdir -p /root/shared
+
+# Ensure zshrc sources the aliases
+if ! grep -q "ctf_aliases" /root/.zshrc; then
+    cat >> /root/.zshrc << 'EOF'
+
+# Load CTF aliases
+if [ -f ~/.ctf_aliases ]; then
+    source ~/.ctf_aliases
+fi
+
+EOF
+fi
+
+if ! grep -q "ctf_aliases" /root/.bashrc 2>/dev/null; then
+    cat >> /root/.bashrc << 'EOF'
+
+# Load CTF aliases
+if [ -f ~/.ctf_aliases ]; then
+    source ~/.ctf_aliases
+fi
+
+EOF
+fi
+
+echo "✅ Critical environment configured"
+echo ""
+
+# Optional setup section - can fail without breaking everything
+echo "📦 Setting up optional tools..."
+
 # Update package lists
-echo "📦 Updating package lists..."
-apt-get update -qq
+apt-get update -qq 2>/dev/null || true
 
 # Install essential Kali tools for CTF
-echo "🛠️  Installing CTF and pentesting tools..."
+echo "Installing pentesting tools (some may be unavailable)..."
 apt-get install -y -qq \
     kali-tools-top10 \
     kali-tools-web \
@@ -30,19 +90,15 @@ apt-get install -y -qq \
     gobuster \
     wfuzz \
     ffuf \
-    burpsuite \
     zaproxy \
     metasploit-framework \
     exploitdb \
-    searchsploit \
     binwalk \
     steghide \
     exiftool \
     foremost \
-    volatility3 \
     radare2 \
     gdb \
-    pwndbg \
     ghidra \
     ltrace \
     strace \
@@ -56,7 +112,6 @@ apt-get install -y -qq \
     python3-pip \
     python3-venv \
     golang \
-    openjdk-17-jdk \
     build-essential \
     net-tools \
     dnsutils \
@@ -66,14 +121,18 @@ apt-get install -y -qq \
     socat \
     rlwrap \
     jq \
-    yq \
     bat \
     ripgrep \
     fd-find \
     fzf \
     zsh \
     zsh-autosuggestions \
-    zsh-syntax-highlighting
+    zsh-syntax-highlighting || true
+
+# Install optional packages that may not be available
+echo "📦 Installing optional packages..."
+apt-get install -y -qq openjdk-11-jdk 2>/dev/null || apt-get install -y -qq default-jdk 2>/dev/null || true
+apt-get install -y -qq yq 2>/dev/null || true
 
 # Install Docker-based tools
 echo "🐳 Setting up Docker-based tools..."
@@ -97,7 +156,10 @@ pip3 install --break-system-packages --quiet \
     ropgadget \
     capstone \
     keystone-engine \
-    unicorn
+    unicorn 2>/dev/null || {
+    echo "⚠️  Some Python packages failed to install. Installing core packages..."
+    pip3 install --break-system-packages --quiet pycryptodome requests beautifulsoup4 scapy 2>/dev/null || true
+}
 
 # Install useful Go tools
 echo "🔷 Installing Go security tools..."
@@ -110,47 +172,6 @@ go install github.com/projectdiscovery/httpx/cmd/httpx@latest 2>/dev/null || tru
 go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest 2>/dev/null || true
 
 # Setup custom shell configuration
-echo "⚙️  Configuring shell..."
-if [ -f "/workspaces/kali/.zsh_aliases" ]; then
-    cp /workspaces/kali/.zsh_aliases /root/.zsh_aliases
-fi
-
-# Add aliases to .zshrc
-cat >> /root/.zshrc << 'EOF'
-
-# Load custom aliases
-if [ -f ~/.zsh_aliases ]; then
-    source ~/.zsh_aliases
-fi
-
-# CTF-specific aliases
-alias ll='ls -lah'
-alias ports='netstat -tulanp'
-alias serve='python3 -m http.server'
-alias myip='curl -s ifconfig.me'
-alias decode64='base64 -d'
-alias encode64='base64'
-alias urldecode='python3 -c "import sys, urllib.parse as ul; print(ul.unquote_plus(sys.argv[1]))"'
-alias urlencode='python3 -c "import sys, urllib.parse as ul; print(ul.quote_plus(sys.argv[1]))"'
-
-# Quick access to CTF resources
-alias ctf-cheat='cat /workspaces/kali/ctf-resources/cheatsheets/CTF_CHEATSHEET.md 2>/dev/null | less || echo "CTF cheatsheet not found"'
-alias revshell='python3 /workspaces/kali/ctf-resources/scripts/reverse_shell.py'
-alias qscan='bash /workspaces/kali/ctf-resources/scripts/quick_scan.sh'
-
-# Quick CTF environment setup
-alias ctf-env='echo "🚩 CTF Environment Ready! Tools: nmap, burpsuite, metasploit, john, hashcat, gobuster, sqlmap, etc."'
-
-# Go tools in PATH
-export GOPATH=/root/go
-export PATH=$PATH:$GOPATH/bin
-
-EOF
-
-# Create useful directories
-echo "📁 Creating workspace directories..."
-mkdir -p /root/ctf/{challenges,tools,scripts,wordlists,notes}
-mkdir -p /root/shared
 
 # Download common wordlists
 echo "📚 Setting up wordlists..."
@@ -203,7 +224,8 @@ EOF
 
 cat /root/WELCOME.txt
 
-# Add welcome message to .zshrc
+# Add welcome message to shells
 echo "cat /root/WELCOME.txt" >> /root/.zshrc
+echo "cat /root/WELCOME.txt" >> /root/.bashrc
 
 echo "✅ Kali Linux CTF Environment setup complete!"
